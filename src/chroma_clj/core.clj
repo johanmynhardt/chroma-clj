@@ -24,14 +24,32 @@
   (util/make-chroma-request @config :get "healthcheck" {}))
 
 (defn databases []
-  (util/make-chroma-request @config :get "" {}))
+  (util/make-chroma-request @config :get "tenants/{tenant}/databases" {}))
+
+(defn collections []
+  (util/make-chroma-request
+   @config :get "tenants/{tenant}/databases/{database}/collections" {}))
+
+(defn collection [collection-id]
+  (util/make-chroma-request
+   (assoc @config :collection collection-id)
+   :get "tenants/{tenant}/databases/{database}/collections/{collection}" {}))
 
 (comment
+  (require '[clojure.pprint :refer [pprint]])
+  (swap! config assoc
+         :tenant "default"
+         :database "default-database")
 
   (auth-identity)
   (get-version)
   (heartbeat)
   (healthcheck)
+  (pprint (collections))
+  (pprint (collection "collection"))
+
+
 
   (databases)
+  (collections)
   )
