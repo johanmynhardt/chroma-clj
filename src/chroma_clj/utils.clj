@@ -1,14 +1,27 @@
 (ns chroma-clj.utils
   "Core API functions for interacting with ChromaDB."
   (:require [cheshire.core :as json]
-            [org.httpkit.client :as http])
+            [org.httpkit.client :as http]
+            [selmer.parser :as s]
+            [clojure.string :as str])
   (:refer-clojure :exclude [get update count]))
 
+(defn url-hydrate-params
+  "Hydrates the path parameters using selmer.
+
+  Eg.: :path of `tenants/{tenant}/databases/{database}` with
+       :m of {:tenant \"foo\" :database \"blurb\"} will result
+       in string of \"tenants/foo/databases/blurb\"."
+  [m path]
+  (-> path
+      (str/replace "{" "{{")
+      (str/replace "}" "}}")
+      (s/render m)))
 
 (defn generate-url
   "Construct the full URL for a given API `path` using the current `config`."
   [config path]
-  (str (:uri config) "/api/v2/" path))
+  (str (:uri config) "/api/v2/" (url-hydrate-params config path)))
 
 
 (defn- handle-response
@@ -19,7 +32,7 @@
           (throw error)
 
           (<= 200 status 299)
-          (json/parse-string body keyword)
+          (json/parse-string keyword body)
 
           :else
           (throw (ex-info
