@@ -32,14 +32,14 @@
           (throw error)
 
           (<= 200 status 299)
-          (json/parse-string keyword body)
+          (json/parse-string body keyword)
 
           :else
           (throw (ex-info
                   "HTTP Error"
                   {:status status
                    :body (try
-                           (json/parse-string body true)
+                           (json/parse-string body keyword)
                            (catch Exception _ body))})))))
 
 
