@@ -2,6 +2,8 @@
 
 > A Clojure client for ChromaDB
 
+> :warning: Note: This fork aims to update the chroma-clj project with chromadb api v2 support, including primary support for [babashka](https://book.babashka.org/).
+
 <!-- [![Clojars Project](https://img.shields.io/clojars/v/org.clojars.megh/semantic-router-clj.svg)](https://clojars.org/org.clojars.megh/semantic-router-clj) -->
 
 ## ChromaDB Setup
@@ -26,16 +28,16 @@ This command starts ChromaDB and maps port 8000 of the container to port 8000 on
 
 #### Step 4: Verify ChromaDB is Running
 
-Send a GET request to the /api/v1/health endpoint:
+Send a GET request to the `/api/v2/healthcheck` endpoint:
 
 ```bash
-curl <http://localhost:8000/api/v1/health>
+curl <http://localhost:8000/api/v2/healthcheck>
 ```
 
 You should receive a response indicating the server is healthy:
 
 ```json
-{"status":"healthy"}
+{"is_executor_ready":true,"is_log_client_ready":true}
 ```
 
 ## License
