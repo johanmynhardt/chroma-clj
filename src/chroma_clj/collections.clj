@@ -1,12 +1,12 @@
 (ns chroma-clj.collections
-  (:require [chroma-clj.config :only [config]]
+  (:require [chroma-clj.config :refer [config]]
             [chroma-clj.utils :as util]))
 
 
 (defn create-collection
   "Create or get a collection with the given `name`, `metadata`, and `configuration`."
   [name & {:keys [metadata configuration] :or {metadata {} configuration {}}}]
-  (util/make-chroma-request @config :post "collections"
+  (util/make-chroma-request @config :post "tenants/{tenant}/databases/{database}/collections"
                             {:body {:name           name
                                     :get_or_create  true
                                     :metadata       metadata
@@ -16,14 +16,16 @@
 (defn get-collections
   "List collections with optional pagination parameters: `offset` and `limit`."
   [& {:keys [offset limit] :or {offset 0 limit 100}}]
-  (util/make-chroma-request @config :get "collections"
+  (util/make-chroma-request @config :get "tenants/{tenant}/databases/{database}/collections"
                             {:params {:offset offset :limit limit}}))
 
 
 (defn get-collection
   "Retrieve a collection by `name`."
   [name]
-  (util/make-chroma-request @config :get (str "collections/" name) {}))
+  (util/make-chroma-request
+   (assoc @config :name name)
+   :get "tenants/{tenant}/databases/{database}/collections/{name}" {}))
 
 
 (defn update-collection
@@ -40,4 +42,7 @@
 (defn delete-collection
   "Delete a collection by `collection-id`."
   [collection-id]
-  (util/make-chroma-request @config :delete (str "collections/" collection-id) {}))
+  (util/make-chroma-request
+   (assoc @config :collection-id collection-id)
+   :delete "tenants/{tenant}/databases/{database}/collections/{collection-id}"
+   {}))
