@@ -4,6 +4,9 @@
   (:require [chroma-clj.config :refer [config]]
             [chroma-clj.utils :as util]))
 
+(defn openapi []
+  (util/make-chroma-request @config :get "openapi.json" {:at-root? true}))
+
 (defn auth-identity
   "Retrieves the current user's identity, tenant, and databases."
   []
@@ -74,6 +77,8 @@
   (swap! config assoc
          :tenant "default"
          :database "default-database")
+  (binding [util/*debug* true]
+    (pprint (-> (openapi) :paths keys (sort))))
   (auth-identity)
   (get-version)
   (heartbeat)
